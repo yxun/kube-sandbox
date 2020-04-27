@@ -28,7 +28,7 @@ func InstallDashboard() error {
 	sh.Shell("kubectl get secrets -o jsonpath=\"{.items[?(@.metadata.annotations['kubernetes\\.io/service-account\\.name']=='default')].data.token}\"|base64 -d")
 	log.Infof("dashboard URL: %s", dashboardURL)
 	log.Info("Remote access: check sshd AllowTcpForwarding yes")
-	log.Infof("Remote access ssh local forward: ssh -L [localport]:localhost:%s %s", testPort, testHost)
+	log.Infof("Remote access ssh local forward: ssh -f -N -L [localport]:localhost:%s %s", testPort, testHost)
 	time.Sleep(5 * time.Second)
 	_, err := sh.Shell("netstat -anp | grep %s", testPort)
 	return err

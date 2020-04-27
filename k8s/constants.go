@@ -14,5 +14,5 @@ const (
 )
 
 var (
-	log = sh.NewLogger()
+	log = sh.NewTextLogger()
 )
