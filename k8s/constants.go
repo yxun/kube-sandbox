@@ -11,6 +11,9 @@ const (
 	kubectlVersion   string = "v1.18.0"
 	kindVersion      string = "v0.7.0"
 	dashboardVersion string = "v2.0.0"
+	minikubeVersion  string = "latest"
+	minikubeDriver   string = "kvm2"
+	k8sVersion       string = "v1.18.0"
 )
 
 var (
