@@ -1,0 +1,8 @@
+# https://k8s.io/examples/admin/resource/quota-pod.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: pod-demo
+spec:
+  hard:
+    pods: "2"

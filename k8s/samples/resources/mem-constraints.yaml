@@ -1,0 +1,12 @@
+# https://k8s.io/examples/admin/resource/memory-constraints.yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-min-max-demo-lr
+spec:
+  limits:
+  - max:
+      memory: 1Gi
+    min:
+      memory: 500Mi
+    type: Container
