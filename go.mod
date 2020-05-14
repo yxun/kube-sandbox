@@ -1,4 +1,4 @@
-module github.com/yxun/goNotebooks
+module github.com/yxun/kube-sandbox
 
 go 1.13
 
