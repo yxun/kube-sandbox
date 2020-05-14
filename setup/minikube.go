@@ -1,4 +1,4 @@
-package install
+package setup
 
 import (
 	"fmt"
@@ -46,12 +46,17 @@ func (l *linux) CreateMinikubeCluster() error {
 	sh.Shell("minikube start --driver=%s --kubernetes-version %s", minikubeDriver, k8sVersion)
 	sh.Shell("minikube status")
 	sh.Shell("sleep 20")
+	log.Info("When reboot machine, run minikube start m01")
+	sh.ShellBackground("kubectl proxy --port=%s", proxyPort)
+	log.Info("Remote access: check sshd AllowTcpForwarding yes")
+	log.Infof("Remote access ssh local forward: ssh -f -N -L [localport]:localhost:%s %s", proxyPort, testHost)
 	_, err := sh.Shell("minikube kubectl -- get po -A")
 	return err
 }
 
 // DeleteMinikubeCluster ...
 func (l *linux) DeleteMinikubeCluster() error {
+	sh.Shell("kill $(lsof -t -i:%s)", proxyPort)
 	sh.Shell("minikube stop")
 	_, err := sh.Shell("minikube delete --all")
 	return err

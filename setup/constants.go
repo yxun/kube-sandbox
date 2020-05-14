@@ -1,4 +1,4 @@
-package install
+package setup
 
 import (
 	"runtime"
@@ -16,6 +16,8 @@ const (
 	minikubeDriver   string = "kvm2"
 	k8sVersion       string = "v1.18.0"
 	helmVersion      string = "v3.2.0"
+	testHost         string = "yxu-blue"
+	proxyPort        string = "8081"
 )
 
 var (
