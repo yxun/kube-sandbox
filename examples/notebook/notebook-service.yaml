@@ -8,5 +8,7 @@ spec:
   ports:
   - port: 8082
     targetPort: 8888
+    nodePort: 30082
   selector:
     app: notebook
+  type: NodePort
