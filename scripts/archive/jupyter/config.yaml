@@ -1,0 +1,12 @@
+proxy:
+  secretToken: '24427e0459947f9716676e4b8d061d3ad54674f62991be4742485e70a2f8c4d6'
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30083
+      https: 30443
+singleuser:
+  storage:
+    capacity: 1Gi
+    dynamic:
+      storageClass: local-storage
