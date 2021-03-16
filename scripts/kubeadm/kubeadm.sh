@@ -4,6 +4,8 @@ function os_config() {
     cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+br_netfilter
 EOF
 
     sudo sysctl --system
@@ -11,14 +13,18 @@ EOF
     sudo setenforce 0
     sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
+    sudo dnf remove zram-generator-defaults -y
+    swapon --show
     sudo swapoff -a
     sudo sed -i 's/^\(.*swap.*\)$/#\1/' /etc/fstab
+    # sudo reboot now
 
     sudo firewall-cmd --permanent --add-port=6443/tcp
     sudo firewall-cmd --permanent --add-port=2379-2380/tcp
     sudo firewall-cmd --permanent --add-port=10250/tcp
     sudo firewall-cmd --permanent --add-port=10251/tcp
     sudo firewall-cmd --permanent --add-port=10252/tcp
+    sudo firewall-cmd --permanent --add-port=30000-32767/tcp
     #sudo firewall-cmd --permanent --add-port=10255/tcp
     #sudo firewall-cmd --permanent --add-port=8472/udp
     #sudo firewall-cmd --add-masquerade --permanent
@@ -42,8 +48,31 @@ EOF
 
 }
 
+function crio_install() {
+    CRIO_VERSION=1.20
+
+    cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
+overlay
+br_netfilter
+EOF
+
+    sudo modprobe overlay
+    sudo modprobe br_netfilter
+
+    sudo sysctl --system
+
+    sudo dnf module enable cri-o:${CRIO_VERSION} -y
+    sudo dnf install cri-o -y
+    # /etc/sysconfig/kubelet
+    ## KUBELET_EXTRA_ARGS=--container-runtime=remote --container-runtime-endpoint='unix:///var/run/crio/crio.sock' --runtime-request-timeout=5m
+
+    sudo systemctl daemon-reload
+    sudo systemctl restart crio
+    sudo systemctl enable crio
+}
+
 function kubeadm_init() {
-    sudo kubeadm init --pod-network-cidr=192.168.0.0/16  
+    sudo kubeadm init --apiserver-advertise-address=192.168.99.102 --pod-network-cidr=192.168.0.0/16
 
     mkdir -p $HOME/.kube
     sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -84,7 +113,7 @@ function cleanup() {
     # kubectl drain <node name> --delete-local-data --force --ignore-daemonsets
 
     sudo iptables -F && sudo iptables -t nat -F && sudo iptables -t mangle -F && sudo iptables -X
-
+    # reinstall docker is needed after cleanup iptables
     # kubectl delete node <node name>
 }
 
