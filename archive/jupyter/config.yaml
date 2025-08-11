@@ -1,5 +1,5 @@
 proxy:
-  secretToken: '24427e0459947f9716676e4b8d061d3ad54674f62991be4742485e70a2f8c4d6'
+  secretToken: ''
   service:
     type: NodePort
     nodePorts:
