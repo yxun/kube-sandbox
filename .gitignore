@@ -17,3 +17,8 @@
 # vscode
 .vscode
 
+# install-config sample auth file
+*.auth
+
+# installer binary
+openshift-install
