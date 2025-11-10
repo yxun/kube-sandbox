@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Usage: ./run.sh TARGET
-# Example: ./run.sh --skip-cleanup
+# Usage: ./main.sh TARGET
+# Example: ./main.sh --skip-cleanup
 
 WD=$(dirname "$0")
 WD=$(cd "$WD"; pwd)

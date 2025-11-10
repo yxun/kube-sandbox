@@ -22,3 +22,6 @@
 
 # installer binary
 openshift-install
+
+# installer assets directories
+assets-*/
