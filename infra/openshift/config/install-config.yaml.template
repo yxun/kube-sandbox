@@ -1,0 +1,29 @@
+apiVersion: v1
+baseDomain: servicemesh.devcluster.openshift.com
+metadata:
+  name: {{NAME_TAG}}
+  creationTimestamp: null
+networking:
+  networkType: OVNKubernetes
+compute:
+- name: worker
+  architecture: amd64
+  hyperthreading: Enabled
+  platform:
+    aws:
+      type: m6a.xlarge
+  replicas: 1 
+controlPlane:
+  name: master
+  architecture: amd64
+  hyperthreading: Enabled
+  platform:
+    aws:
+      type: t3a.xlarge
+  replicas: 1
+platform:
+  aws:
+    region: {{AWS_REGION}}
+fips: false
+publish: External
+pullSecret: {{PULL_SECRET}}
