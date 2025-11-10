@@ -77,7 +77,7 @@ function download_ztunnel_if_necessary () {
   fi
   # Enter the output directory.
   mkdir -p "$(dirname "$2")"
-  pushd "$(dirname "$2")"
+  pushd "$(dirname "$2")" || exit
 
   # Download and make the binary executable
   echo "Downloading ztunnel: $1 to $2"
@@ -87,7 +87,7 @@ function download_ztunnel_if_necessary () {
   # Make a copy named just "ztunnel" in the same directory (overwrite if necessary).
   echo "Copying $2 to $(dirname "$2")/${3}"
   cp -f "$2" "$(dirname "$2")/${3}"
-  popd
+  popd || exit
 
   # Also copy it to out/$os_arch/ztunnel as that's whats used in the build
   echo "Copying '${2}' to ${TARGET_OUT_LINUX}/ztunnel"
