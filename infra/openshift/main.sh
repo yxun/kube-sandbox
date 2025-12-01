@@ -58,6 +58,7 @@ while (( "$#" )); do
     ;;
     -*)
       echo "Error: Unsupported flag $1" >&2
+      echo "Usage: $0 [-d] [-v] [-n] [--config] [--cleanup]"
       exit 1
       ;;
     *) # preserve positional arguments
