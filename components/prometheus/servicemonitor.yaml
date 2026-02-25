@@ -1,0 +1,60 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: my-monitor
+  namespace: sail-operator
+spec:
+  selector:
+    matchLabels:
+      control-plane: sail-operator
+  endpoints:
+  - port: https
+    scheme: https
+    path: /metrics
+    interval: 5s      # How often to scrape metrics
+    authorization:
+      type: Bearer
+      credentials:
+        name: my-token
+        key: token
+    tlsConfig:
+      insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+    - sail-operator # The namespace where the Service is located
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-token
+  namespace: sail-operator
+type: Opaque
+stringData:
+  token: "${TOKEN}"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: curl-metrics
+  namespace: sail-operator
+spec:
+  template:
+    spec:
+      containers:
+      - name: curl-metrics
+        image: quay.io/curl/curl:8.11.1
+        command: ['curl', '-v', '-k', '-H', 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Il9JbnpYWFVNbzhpMENUdFlwU1VJQW5qTm5SLXdRUW90UTZWd2FTLThORFEifQ.eyJhdWQiOlsia3ViZXJuZXRlcy5kZWZhdWx0LnN2YyJdLCJleHAiOjE3Njg0Mjc4NjAsImlhdCI6MTc2ODQyNDI2MCwiaXNzIjoia3ViZXJuZXRlcy5kZWZhdWx0LnN2YyIsImp0aSI6IjQ5MzkyMDkxLTEwNzItNDdhYi05OGE0LTMzZjRmOGFmMjRiOSIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoic2FpbC1vcGVyYXRvciIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJzYWlsLW9wZXJhdG9yIiwidWlkIjoiZjhiZTRlYzMtMGNjMS00NGY4LWE3MDctNjZlMzRlZTZmMjg5In19LCJuYmYiOjE3Njg0MjQyNjAsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpzYWlsLW9wZXJhdG9yOnNhaWwtb3BlcmF0b3IifQ.civgs-K0whOXGt-PNSOXDxpeZGu6Q5DpYQm9-kidLBcmLpY8_nNxwd1IkViIuCodgyZvgmx7nIxmLXwFbVXCBjBrzUSCLaotP48GPkPvctXmS3n3zte08Hr-1ZD2v1k2YjUXgyp68SA8DtXt9k-qDqk6V2XZ8rhyQ_WezKW2SAEq4Nbxgxe7DicXO2MR8bMnWr7xLu8uWq5DWv89mkf7c1a7xHv9h7PA0CUw5ULkAXtHUc2TTSl1HsPrX4JqgoX0W8rmsuikhCnAOAhdtmtFhF6qmdj-y7QaqaxA8VeRBdWPaVL2FxKlh1TPwSb_NB7nraA85H588FsooiICUrnXEg', 'https://sail-operator-metrics-service.sail-operator.svc.cluster.local:8443/metrics']
+      restartPolicy: Never
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metrics-reader-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metrics-reader
+subjects:
+- kind: ServiceAccount
+  name: sail-operator
+  namespace: sail-operator

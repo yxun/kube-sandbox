@@ -17,9 +17,14 @@ helm repo add stable https://charts.helm.sh/stable
 helm repo update
 
 kubectl create namespace monitoring
+kubectl config set-context --current --namespace=sail-operator
+
+# serviceMonitorSelectorNilUsesHelmValues=false allows Prometheus to discover ServiceMonitors across all namespaces
 
 helm install kind-prometheus prometheus-community/kube-prometheus-stack \
   --namespace monitoring \
+  --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
+  --set prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues=false \
   --set prometheus.service.nodePort=30000 \
   --set prometheus.service.type=NodePort \
   --set grafana.service.nodePort=31000 \
@@ -29,4 +34,10 @@ helm install kind-prometheus prometheus-community/kube-prometheus-stack \
   --set prometheus-node-exporter.service.nodePort=32001 \
   --set prometheus-node-exporter.service.type=NodePort
 
-kubectl get pods -n monitoring -l release=kind-prometheus
+kubectl get pods -n monitoring
+kubectl get svc -n monitoring
+kubectl get servicemonitors -n monitoring
+
+# creating a ClusterRoleBinding for the service account to allow access to metrics
+
+export TOKEN=$(kubectl create token sail-operator -n sail-operator)

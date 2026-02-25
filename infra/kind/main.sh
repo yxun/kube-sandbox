@@ -74,6 +74,7 @@ while (( "$#" )); do
     ;;
     -*)
       echo "Error: Unsupported flag $1" >&2
+      echo "Usage: $0 [--node-image] [--kind-config] [--skip-cleanup] [--topology] [--topology-config]"
       exit 1
       ;;
     *) # preserve positional arguments
