@@ -32,7 +32,7 @@ set -x
 source "${COMMON_SCRIPTS}/kind_provisioner.sh"
 
 TOPOLOGY=SINGLE_CLUSTER
-NODE_IMAGE="kindest/node:v1.32.0"
+NODE_IMAGE="kindest/node:v1.35.0"
 KIND_CONFIG=""
 CLUSTER_TOPOLOGY_CONFIG_FILE="${COMMON_SCRIPTS}/config/multicluster.json"
 CLUSTER_NAME="${CLUSTER_NAME:-kind-testing}"
@@ -40,7 +40,7 @@ CLUSTER_NAME="${CLUSTER_NAME:-kind-testing}"
 while (( "$#" )); do
   case "$1" in
     # Node images can be found at https://github.com/kubernetes-sigs/kind/releases
-    # For example, kindest/node:v1.32.0
+    # For example, kindest/node:v1.35.0
     --node-image)
       NODE_IMAGE=$2
       shift 2
